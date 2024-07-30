@@ -39,15 +39,23 @@ const VerletSimulation: React.FC = () => {
         context.scale(dpr, dpr);
 
         const sim = new VerletJS(width, height, canvas);
-        sim.friction = 1;
+        sim.gravity = new Vec2(0, 1);
+        sim.friction = 0.95;
 
-        const segment = sim.lineSegments(
-            [new Vec2(200, 300), new Vec2(300, 300), new Vec2(400, 300), new Vec2(500, 300), new Vec2(600, 300)],
-            0.02
-        );
+        const points = [];
+        const numPoints = 10;
+        const lineLength = 10;
+        const startX = 100;
+        const startY = 300;
+
+        for (let i = 0; i < numPoints; i++) {
+            points.push(new Vec2(startX + (lineLength / (numPoints - 1)) * i, startY));
+        }
+
+        const segment = sim.lineSegments(points, 0.15);
 
         segment.pin(0);
-        segment.pin(4);
+        segment.pin(points.length - 1);
 
         linePointsRef.current = segment.particles.map((p: Particle) => ({
             pos: { x: p.pos.x, y: p.pos.y },
@@ -93,10 +101,6 @@ const VerletSimulation: React.FC = () => {
                 const activePoint = linePoints[activePointIndexRef.current];
                 activePoint.pos.x = mouseX;
                 activePoint.pos.y = mouseY;
-
-                if (activePointIndexRef.current === 0 || activePointIndexRef.current === linePoints.length - 1) {
-                    console.log("Point is being dragged");
-                }
             }
         };
 
@@ -119,7 +123,20 @@ const VerletSimulation: React.FC = () => {
 
         const loop = () => {
             sim.frame(16);
-            sim.draw();
+            context.clearRect(0, 0, width, height);
+
+            context.strokeStyle = "red";
+            context.lineWidth = 10;
+            context.beginPath();
+            const linePoints = linePointsRef.current;
+            linePoints.forEach((point, index) => {
+                if (index === 0) {
+                    context.moveTo(point.pos.x, point.pos.y);
+                } else {
+                    context.lineTo(point.pos.x, point.pos.y);
+                }
+            });
+            context.stroke();
 
             linePointsRef.current = segment.particles.map((p: Particle) => ({
                 pos: { x: p.pos.x, y: p.pos.y },
