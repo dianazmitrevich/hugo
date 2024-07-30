@@ -17,6 +17,7 @@ const VerletSimulation: React.FC = () => {
     const [activePointIndex, setActivePointIndex] = useState<number | null>(null);
     const activePointIndexRef = useRef<number | null>(activePointIndex);
     const linesRef = useRef<{ particles: Particle[]; segment: any }[]>([]);
+    const activeLineIndexRef = useRef<number | null>(null);
 
     useEffect(() => {
         activePointIndexRef.current = activePointIndex;
@@ -42,7 +43,6 @@ const VerletSimulation: React.FC = () => {
         sim.gravity = new Vec2(0, 1);
         sim.friction = 0.95;
 
-        // Create multiple lines
         const createLine = (startX: number, startY: number, numPoints: number, lineLength: number) => {
             const points = [];
             for (let i = 0; i < numPoints; i++) {
@@ -56,19 +56,22 @@ const VerletSimulation: React.FC = () => {
             return segment;
         };
 
-        // Initialize lines
         linesRef.current = [
             { segment: createLine(100, 300, 10, 100), particles: [] },
-            { segment: createLine(200, 400, 10, 100), particles: [] },
-            { segment: createLine(300, 600, 10, 100), particles: [] },
+            { segment: createLine(200, 400, 11, 100), particles: [] },
+            { segment: createLine(300, 600, 12, 100), particles: [] },
         ];
 
-        linesRef.current.forEach((line) => {
-            line.particles = line.segment.particles.map((p: Particle) => ({
-                pos: { x: p.pos.x, y: p.pos.y },
-                lastPos: { x: p.lastPos.x, y: p.lastPos.y },
-            }));
-        });
+        const updateParticles = () => {
+            linesRef.current.forEach((line) => {
+                line.particles = line.segment.particles.map((p: Particle) => ({
+                    pos: { x: p.pos.x, y: p.pos.y },
+                    lastPos: { x: p.lastPos.x, y: p.lastPos.y },
+                }));
+            });
+        };
+
+        updateParticles();
 
         const findClosestPoint = (mouseX: number, mouseY: number): Particle | null => {
             let closestPoint: Particle | null = null;
@@ -101,31 +104,17 @@ const VerletSimulation: React.FC = () => {
             const { x: mouseX, y: mouseY } = getMousePosition(e);
 
             const activePointIndex = activePointIndexRef.current;
+            const activeLineIndex = activeLineIndexRef.current;
 
-            if (activePointIndex !== null) {
-                linesRef.current.forEach((line) => {
-                    const linePoints = line.particles;
+            if (activePointIndex !== null && activeLineIndex !== null) {
+                const line = linesRef.current[activeLineIndex];
+                if (line) {
+                    const activePoint = line.particles[activePointIndex];
+                    if (activePoint) {
+                        activePoint.pos.x = mouseX;
+                        activePoint.pos.y = mouseY;
 
-                    // Ensure the index is within bounds
-                    if (activePointIndex >= 0 && activePointIndex < linePoints.length) {
-                        const activePoint = linePoints[activePointIndex];
-                        if (activePoint) {
-                            activePoint.pos.x = mouseX;
-                            activePoint.pos.y = mouseY;
-                        }
-                    }
-                });
-
-                const closestPoint = findClosestPoint(mouseX, mouseY);
-
-                if (closestPoint) {
-                    const lineIndex = linesRef.current.findIndex((line) => line.particles.includes(closestPoint));
-                    if (lineIndex !== -1) {
-                        const index = linesRef.current[lineIndex].particles.indexOf(closestPoint);
-                        if (index === 0 || index === linesRef.current[lineIndex].particles.length - 1) {
-                            setActivePointIndex(index);
-                            console.log("end is moving");
-                        }
+                        console.log("it's moving");
                     }
                 }
             }
@@ -146,6 +135,8 @@ const VerletSimulation: React.FC = () => {
                     const index = linesRef.current[lineIndex].particles.indexOf(closestPoint);
                     if (index === 0 || index === linesRef.current[lineIndex].particles.length - 1) {
                         setActivePointIndex(index);
+                        activePointIndexRef.current = index;
+                        activeLineIndexRef.current = lineIndex;
                     }
                 }
             }
@@ -170,12 +161,7 @@ const VerletSimulation: React.FC = () => {
                 context.stroke();
             });
 
-            linesRef.current.forEach((line) => {
-                line.particles = line.segment.particles.map((p: Particle) => ({
-                    pos: { x: p.pos.x, y: p.pos.y },
-                    lastPos: { x: p.lastPos.x, y: p.lastPos.y },
-                }));
-            });
+            updateParticles();
 
             requestAnimationFrame(loop);
         };
