@@ -21,6 +21,7 @@ const VerletSimulation: React.FC = () => {
     const linesRef = useRef<{ particles: Particle[]; segment: any }[]>([]);
     const activeLineIndexRef = useRef<number | null>(null);
     const [gridPoints, setGridPoints] = useState<GridPoint[]>([]);
+    const availablePointsRef = useRef<GridPoint[]>([]);
 
     useEffect(() => {
         activePointIndexRef.current = activePointIndex;
@@ -48,14 +49,26 @@ const VerletSimulation: React.FC = () => {
             sim.friction = 0.95;
 
             const createRandomLine = () => {
-                const randomIndex1 = Math.floor(Math.random() * gridPoints.length);
-                let randomIndex2;
-                do {
-                    randomIndex2 = Math.floor(Math.random() * gridPoints.length);
-                } while (randomIndex1 === randomIndex2);
+                if (availablePointsRef.current.length < 2) {
+                    console.warn("Not enough points available to create a line.");
+                    return null;
+                }
 
-                const start = gridPoints[randomIndex1];
-                const end = gridPoints[randomIndex2];
+                let randomIndex1: number, randomIndex2: number;
+                let start: GridPoint, end: GridPoint;
+
+                do {
+                    randomIndex1 = Math.floor(Math.random() * availablePointsRef.current.length);
+                    start = availablePointsRef.current[randomIndex1];
+
+                    randomIndex2 = Math.floor(Math.random() * availablePointsRef.current.length);
+                    end = availablePointsRef.current[randomIndex2];
+                } while (start === end);
+
+                availablePointsRef.current = availablePointsRef.current.filter(
+                    (point) => point !== start && point !== end
+                );
+
                 return createLine(start.x, start.y, end.x, end.y, Math.floor(Math.random() * 5) + 5);
             };
 
@@ -75,11 +88,13 @@ const VerletSimulation: React.FC = () => {
                 return segment;
             };
 
+            availablePointsRef.current = [...gridPoints];
+
             linesRef.current = [
                 { segment: createRandomLine(), particles: [] },
                 { segment: createRandomLine(), particles: [] },
                 { segment: createRandomLine(), particles: [] },
-            ];
+            ].filter((line) => line.segment !== null);
 
             const updateParticles = () => {
                 linesRef.current.forEach((line) => {
