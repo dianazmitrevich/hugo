@@ -21,6 +21,7 @@ const VerletSimulation: React.FC = () => {
     const linesRef = useRef<{ particles: Particle[]; segment: any }[]>([]);
     const activeLineIndexRef = useRef<number | null>(null);
     const [gridPoints, setGridPoints] = useState<GridPoint[]>([]);
+    const [hoveredPoint, setHoveredPoint] = useState<GridPoint | null>(null);
     const availablePointsRef = useRef<GridPoint[]>([]);
 
     useEffect(() => {
@@ -105,16 +106,18 @@ const VerletSimulation: React.FC = () => {
                 });
             };
 
-            const isMouseOverGridPoint = (mouseX: number, mouseY: number): boolean => {
-                return gridPoints.some((point) => {
-                    const { x, y, size } = point;
-                    return (
-                        mouseX >= x - size / 2 &&
-                        mouseX <= x + size / 2 &&
-                        mouseY >= y - size / 2 &&
-                        mouseY <= y + size / 2
-                    );
-                });
+            const isMouseOverGridPoint = (mouseX: number, mouseY: number): GridPoint | null => {
+                return (
+                    gridPoints.find((point) => {
+                        const { x, y, size } = point;
+                        return (
+                            mouseX >= x - size / 2 &&
+                            mouseX <= x + size / 2 &&
+                            mouseY >= y - size / 2 &&
+                            mouseY <= y + size / 2
+                        );
+                    }) || null
+                );
             };
 
             const getMousePosition = (e: MouseEvent): { x: number; y: number } => {
@@ -138,16 +141,28 @@ const VerletSimulation: React.FC = () => {
                             activePoint.pos.x = mouseX;
                             activePoint.pos.y = mouseY;
 
-                            if (isMouseOverGridPoint(mouseX, mouseY)) {
-                                console.log("End of line is over a grid point!");
+                            if (
+                                activePointIndex === 0 ||
+                                activePointIndex === linesRef.current[activeLineIndex].particles.length - 1
+                            ) {
+                                const pointUnderMouse = isMouseOverGridPoint(mouseX, mouseY);
+                                if (pointUnderMouse) {
+                                    setHoveredPoint(pointUnderMouse);
+                                } else {
+                                    setHoveredPoint(null);
+                                }
                             }
                         }
                     }
+                } else {
+                    setHoveredPoint(null);
                 }
             };
 
             const handleMouseUp = () => {
                 setActivePointIndex(null);
+                activePointIndexRef.current = null;
+                activeLineIndexRef.current = null;
             };
 
             const findClosestParticle = (mouseX: number, mouseY: number): Particle | null => {
@@ -179,10 +194,13 @@ const VerletSimulation: React.FC = () => {
                     const lineIndex = linesRef.current.findIndex((line) => line.particles.includes(closestParticle));
                     if (lineIndex !== -1) {
                         const index = linesRef.current[lineIndex].particles.indexOf(closestParticle);
+
                         if (index === 0 || index === linesRef.current[lineIndex].particles.length - 1) {
-                            setActivePointIndex(index);
-                            activePointIndexRef.current = index;
-                            activeLineIndexRef.current = lineIndex;
+                            if (activeLineIndexRef.current !== lineIndex || activePointIndexRef.current !== index) {
+                                setActivePointIndex(index);
+                                activePointIndexRef.current = index;
+                                activeLineIndexRef.current = lineIndex;
+                            }
                         }
                     }
                 }
@@ -229,7 +247,7 @@ const VerletSimulation: React.FC = () => {
 
     return (
         <div>
-            <GridWithPoints onPointsReady={setGridPoints} />
+            <GridWithPoints onPointsReady={setGridPoints} hoveredPoint={hoveredPoint} />
             <canvas ref={canvasRef} style={{ width: "100%", height: "100vh" }} />
         </div>
     );

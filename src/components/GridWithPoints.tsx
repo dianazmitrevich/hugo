@@ -10,9 +10,13 @@ export type GridPoint = {
     y: number;
     size: number;
     isHighlighted?: boolean;
+    isHovered?: boolean;
 };
 
-const GridWithPoints: React.FC<{ onPointsReady?: (points: GridPoint[]) => void }> = ({ onPointsReady }) => {
+const GridWithPoints: React.FC<{
+    onPointsReady?: (points: GridPoint[]) => void;
+    hoveredPoint?: GridPoint | null;
+}> = ({ onPointsReady, hoveredPoint }) => {
     const [gridPoints, setGridPoints] = useState<GridPoint[]>([]);
 
     useEffect(() => {
@@ -36,6 +40,7 @@ const GridWithPoints: React.FC<{ onPointsReady?: (points: GridPoint[]) => void }
                         y: j * (pointHeight + GRID_GAP) + pointSize / 2,
                         size: pointSize,
                         isHighlighted: false,
+                        isHovered: false,
                     });
                 }
             }
@@ -54,13 +59,18 @@ const GridWithPoints: React.FC<{ onPointsReady?: (points: GridPoint[]) => void }
         };
     }, [onPointsReady]);
 
+    const updatedPoints = gridPoints.map((point) => ({
+        ...point,
+        isHovered: hoveredPoint ? point === hoveredPoint : false,
+    }));
+
     return (
         <div className="dots__container">
-            {gridPoints.map((point, index) => (
+            {updatedPoints.map((point, index) => (
                 <div
                     key={index}
                     style={{
-                        backgroundColor: point.isHighlighted ? "green" : "blue",
+                        backgroundColor: point.isHovered ? "green" : point.isHighlighted ? "blue" : "grey",
                         width: point.size,
                         height: point.size,
                         position: "absolute",
