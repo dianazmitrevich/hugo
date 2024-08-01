@@ -13,12 +13,13 @@ type Particle = {
 
 const POINT_RADIUS = 10;
 const SNAP_RADIUS = 20;
+const LINE_COLORS = ["#FF5733", "#33FF57", "#3357FF", "#F333FF", "#FF33A1"];
 
 const VerletSimulation: React.FC = () => {
     const canvasRef = useRef<HTMLCanvasElement>(null);
     const [activePointIndex, setActivePointIndex] = useState<number | null>(null);
     const activePointIndexRef = useRef<number | null>(activePointIndex);
-    const linesRef = useRef<{ particles: Particle[]; segment: any }[]>([]);
+    const linesRef = useRef<{ particles: Particle[]; segment: any; color: string }[]>([]);
     const activeLineIndexRef = useRef<number | null>(null);
     const [gridPoints, setGridPoints] = useState<GridPoint[]>([]);
     const [hoveredPoint, setHoveredPoint] = useState<GridPoint | null>(null);
@@ -109,9 +110,21 @@ const VerletSimulation: React.FC = () => {
             availablePointsRef.current = [...gridPoints];
 
             linesRef.current = [
-                { segment: createRandomLine(), particles: [] },
-                { segment: createRandomLine(), particles: [] },
-                { segment: createRandomLine(), particles: [] },
+                {
+                    segment: createRandomLine(),
+                    particles: [],
+                    color: LINE_COLORS[Math.floor(Math.random() * LINE_COLORS.length)],
+                },
+                {
+                    segment: createRandomLine(),
+                    particles: [],
+                    color: LINE_COLORS[Math.floor(Math.random() * LINE_COLORS.length)],
+                },
+                {
+                    segment: createRandomLine(),
+                    particles: [],
+                    color: LINE_COLORS[Math.floor(Math.random() * LINE_COLORS.length)],
+                },
             ].filter((line) => line.segment !== null);
 
             const updateParticles = () => {
@@ -296,6 +309,7 @@ const VerletSimulation: React.FC = () => {
 
                 linesRef.current.forEach((line) => {
                     context.strokeStyle = "red";
+                    context.strokeStyle = line.color;
                     context.lineJoin = "round";
                     context.lineCap = "round";
                     context.lineWidth = 60;
