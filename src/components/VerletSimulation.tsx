@@ -12,7 +12,7 @@ type Particle = {
 };
 
 const POINT_RADIUS = 10;
-const SNAP_RADIUS = 10;
+const SNAP_RADIUS = 20;
 
 const VerletSimulation: React.FC = () => {
     const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -71,7 +71,7 @@ const VerletSimulation: React.FC = () => {
                     (point) => point !== start && point !== end
                 );
 
-                return createLine(start.x, start.y, end.x, end.y, Math.floor(Math.random() * 5) + 5);
+                return createLine(start.x, start.y, end.x, end.y, Math.floor(Math.random() * 10) + 10);
             };
 
             const createLine = (startX: number, startY: number, endX: number, endY: number, numPoints: number) => {
@@ -83,7 +83,7 @@ const VerletSimulation: React.FC = () => {
                     points.push(new Vec2(x, y));
                 }
 
-                const segment = sim.lineSegments(points, 0.15);
+                const segment = sim.lineSegments(points, 0.65);
                 segment.pin(0);
                 segment.pin(points.length - 1);
 
@@ -296,7 +296,9 @@ const VerletSimulation: React.FC = () => {
 
                 linesRef.current.forEach((line) => {
                     context.strokeStyle = "red";
-                    context.lineWidth = 30;
+                    context.lineJoin = "round";
+                    context.lineCap = "round";
+                    context.lineWidth = 60;
                     context.beginPath();
 
                     const linePoints: Particle[] = line.segment.particles;
