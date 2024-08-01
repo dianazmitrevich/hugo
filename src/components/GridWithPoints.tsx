@@ -13,6 +13,7 @@ export type GridPoint = {
     sizeY: number;
     isHighlighted?: boolean;
     isHovered?: boolean;
+    color?: string;
 };
 
 const GridWithPoints: React.FC<{
@@ -50,9 +51,33 @@ const GridWithPoints: React.FC<{
                 }
             }
 
-            setGridPoints(points);
+            const shuffledPoints = [...points];
+            for (let i = shuffledPoints.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [shuffledPoints[i], shuffledPoints[j]] = [shuffledPoints[j], shuffledPoints[i]];
+            }
+
+            const totalColors = lineColors.length;
+            const colorAssignments: GridPoint[] = [];
+
+            lineColors.forEach((color) => {
+                for (let i = 0; i < 2; i++) {
+                    colorAssignments.push({
+                        ...shuffledPoints.pop()!,
+                        color,
+                    });
+                }
+            });
+
+            while (shuffledPoints.length) {
+                colorAssignments.push({
+                    ...shuffledPoints.pop()!,
+                });
+            }
+
+            setGridPoints(colorAssignments);
             if (onPointsReady) {
-                onPointsReady(points);
+                onPointsReady(colorAssignments);
             }
         };
 
@@ -75,7 +100,13 @@ const GridWithPoints: React.FC<{
                 <div
                     key={index}
                     style={{
-                        backgroundColor: point.isHovered ? "green" : point.isHighlighted ? "blue" : "grey",
+                        backgroundColor: point.color
+                            ? point.color
+                            : point.isHovered
+                            ? "green"
+                            : point.isHighlighted
+                            ? "blue"
+                            : "grey",
                         minWidth: point.sizeX,
                         maxWidth: point.sizeX,
                         minHeight: point.sizeY,
@@ -83,6 +114,7 @@ const GridWithPoints: React.FC<{
                         position: "absolute",
                         left: point.x - point.sizeX / 2,
                         top: point.y - point.sizeY / 2,
+                        opacity: 0.5,
                     }}
                     className="dot"
                 />
