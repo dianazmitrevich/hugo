@@ -23,6 +23,7 @@ const VerletSimulation: React.FC = () => {
     const [gridPoints, setGridPoints] = useState<GridPoint[]>([]);
     const [hoveredPoint, setHoveredPoint] = useState<GridPoint | null>(null);
     const availablePointsRef = useRef<GridPoint[]>([]);
+    const previousPointRef = useRef<Vec2 | null>(null);
 
     useEffect(() => {
         activePointIndexRef.current = activePointIndex;
@@ -166,7 +167,6 @@ const VerletSimulation: React.FC = () => {
                                 activePointIndex === linesRef.current[activeLineIndex].particles.length - 1
                             ) {
                                 const pointUnderMouse = isMouseOverGridPoint(mouseX, mouseY);
-                                console.log(pointUnderMouse);
                                 if (pointUnderMouse) {
                                     setHoveredPoint(pointUnderMouse);
                                 } else {
@@ -192,22 +192,53 @@ const VerletSimulation: React.FC = () => {
                             const { x: mouseX, y: mouseY } = getMousePosition(e);
 
                             const pointUnderMouse = isMouseOverGridPoint(mouseX, mouseY);
+
                             if (pointUnderMouse) {
                                 const { x: gridX, y: gridY } = getGridPointCenter(pointUnderMouse);
 
-                                activePoint.pos.x = gridX;
-                                activePoint.pos.y = gridY;
+                                if (
+                                    availablePointsRef.current.some(
+                                        (point) => point.x === pointUnderMouse.x && point.y === pointUnderMouse.y
+                                    )
+                                ) {
+                                    activePoint.pos.x = gridX;
+                                    activePoint.pos.y = gridY;
 
-                                updateLine(activeLineIndex);
+                                    const previousPoint = previousPointRef.current;
+                                    if (previousPoint) {
+                                        availablePointsRef.current.push({
+                                            x: previousPoint.x,
+                                            y: previousPoint.y,
+                                            size: POINT_RADIUS,
+                                        });
 
-                                setHoveredPoint(pointUnderMouse);
+                                        availablePointsRef.current = availablePointsRef.current.filter(
+                                            (point) => !(point.x === pointUnderMouse.x && point.y === pointUnderMouse.y)
+                                        );
+                                    }
+
+                                    updateLine(activeLineIndex);
+                                    setHoveredPoint(pointUnderMouse);
+                                } else {
+                                    if (previousPointRef.current) {
+                                        activePoint.pos.x = previousPointRef.current.x;
+                                        activePoint.pos.y = previousPointRef.current.y;
+                                        updateLine(activeLineIndex);
+                                    }
+                                }
+                            } else {
+                                if (previousPointRef.current) {
+                                    activePoint.pos.x = previousPointRef.current.x;
+                                    activePoint.pos.y = previousPointRef.current.y;
+                                    updateLine(activeLineIndex);
+                                }
                             }
+
+                            setActivePointIndex(null);
+                            activePointIndexRef.current = null;
+                            activeLineIndexRef.current = null;
                         }
                     }
-
-                    setActivePointIndex(null);
-                    activePointIndexRef.current = null;
-                    activeLineIndexRef.current = null;
                 }
             };
 
@@ -246,6 +277,11 @@ const VerletSimulation: React.FC = () => {
                                 setActivePointIndex(index);
                                 activePointIndexRef.current = index;
                                 activeLineIndexRef.current = lineIndex;
+
+                                previousPointRef.current = {
+                                    x: closestParticle.pos.x,
+                                    y: closestParticle.pos.y,
+                                };
                             }
                         }
                     }
