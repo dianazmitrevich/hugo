@@ -109,21 +109,33 @@ const VerletSimulation: React.FC = () => {
 
             availablePointsRef.current = [...gridPoints];
 
+            const shuffleArray = (array: any[]) => {
+                for (let i = array.length - 1; i > 0; i--) {
+                    const j = Math.floor(Math.random() * (i + 1));
+                    [array[i], array[j]] = [array[j], array[i]];
+                }
+                return array;
+            };
+
+            const shuffledColors = shuffleArray([...LINE_COLORS]);
+
+            const uniqueColors = shuffledColors.slice(0, 3);
+
             linesRef.current = [
                 {
                     segment: createRandomLine(),
                     particles: [],
-                    color: LINE_COLORS[Math.floor(Math.random() * LINE_COLORS.length)],
+                    color: uniqueColors[0],
                 },
                 {
                     segment: createRandomLine(),
                     particles: [],
-                    color: LINE_COLORS[Math.floor(Math.random() * LINE_COLORS.length)],
+                    color: uniqueColors[1],
                 },
                 {
                     segment: createRandomLine(),
                     particles: [],
-                    color: LINE_COLORS[Math.floor(Math.random() * LINE_COLORS.length)],
+                    color: uniqueColors[2],
                 },
             ].filter((line) => line.segment !== null);
 
