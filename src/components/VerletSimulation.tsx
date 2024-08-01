@@ -192,6 +192,7 @@ const VerletSimulation: React.FC = () => {
                             const { x: mouseX, y: mouseY } = getMousePosition(e);
 
                             const pointUnderMouse = isMouseOverGridPoint(mouseX, mouseY);
+                            const previousPoint = previousPointRef.current;
 
                             if (pointUnderMouse) {
                                 const { x: gridX, y: gridY } = getGridPointCenter(pointUnderMouse);
@@ -204,7 +205,6 @@ const VerletSimulation: React.FC = () => {
                                     activePoint.pos.x = gridX;
                                     activePoint.pos.y = gridY;
 
-                                    const previousPoint = previousPointRef.current;
                                     if (previousPoint) {
                                         availablePointsRef.current.push({
                                             x: previousPoint.x,
@@ -222,16 +222,16 @@ const VerletSimulation: React.FC = () => {
                                     updateLine(activeLineIndex);
                                     setHoveredPoint(pointUnderMouse);
                                 } else {
-                                    if (previousPointRef.current) {
-                                        activePoint.pos.x = previousPointRef.current.x;
-                                        activePoint.pos.y = previousPointRef.current.y;
+                                    if (previousPoint) {
+                                        activePoint.pos.x = previousPoint.x;
+                                        activePoint.pos.y = previousPoint.y;
                                         updateLine(activeLineIndex);
                                     }
                                 }
                             } else {
-                                if (previousPointRef.current) {
-                                    activePoint.pos.x = previousPointRef.current.x;
-                                    activePoint.pos.y = previousPointRef.current.y;
+                                if (previousPoint) {
+                                    activePoint.pos.x = previousPoint.x;
+                                    activePoint.pos.y = previousPoint.y;
                                     updateLine(activeLineIndex);
                                 }
                             }
