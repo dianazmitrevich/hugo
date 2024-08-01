@@ -12,7 +12,7 @@ type Particle = {
 };
 
 const POINT_RADIUS = 10;
-const SNAP_RADIUS = 20;
+const SNAP_RADIUS = 40;
 const LINE_COLORS = ["#FF5733", "#33FF57", "#3357FF", "#F333FF", "#FF33A1"];
 
 const VerletSimulation: React.FC = () => {
@@ -189,10 +189,9 @@ const VerletSimulation: React.FC = () => {
                             activePoint.pos.x = mouseX;
                             activePoint.pos.y = mouseY;
 
-                            if (
-                                activePointIndex === 0 ||
-                                activePointIndex === linesRef.current[activeLineIndex].particles.length - 1
-                            ) {
+                            updateLine(activeLineIndex);
+
+                            if (activePointIndex === 0 || activePointIndex === line.particles.length - 1) {
                                 const pointUnderMouse = isMouseOverGridPoint(mouseX, mouseY);
                                 if (pointUnderMouse) {
                                     setHoveredPoint(pointUnderMouse);
@@ -217,7 +216,6 @@ const VerletSimulation: React.FC = () => {
                         const activePoint = line.particles[activePointIndex];
                         if (activePoint) {
                             const { x: mouseX, y: mouseY } = getMousePosition(e);
-
                             const pointUnderMouse = isMouseOverGridPoint(mouseX, mouseY);
                             const previousPoint = previousPointRef.current;
 
@@ -322,7 +320,6 @@ const VerletSimulation: React.FC = () => {
                 context.clearRect(0, 0, width, height);
 
                 linesRef.current.forEach((line) => {
-                    context.strokeStyle = "red";
                     context.strokeStyle = line.color;
                     context.lineJoin = "round";
                     context.lineCap = "round";
