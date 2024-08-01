@@ -89,6 +89,22 @@ const VerletSimulation: React.FC = () => {
                 return segment;
             };
 
+            const updateLine = (lineIndex: number) => {
+                const line = linesRef.current[lineIndex];
+                if (line) {
+                    const start = line.particles[0];
+                    const end = line.particles[line.particles.length - 1];
+
+                    line.segment = createLine(
+                        start.pos.x,
+                        start.pos.y,
+                        end.pos.x,
+                        end.pos.y,
+                        line.segment.particles.length
+                    );
+                }
+            };
+
             availablePointsRef.current = [...gridPoints];
 
             linesRef.current = [
@@ -127,6 +143,10 @@ const VerletSimulation: React.FC = () => {
                 return { x, y };
             };
 
+            const getGridPointCenter = (point: GridPoint): { x: number; y: number } => {
+                return { x: point.x, y: point.y };
+            };
+
             const handleMouseMove = (e: MouseEvent) => {
                 const { x: mouseX, y: mouseY } = getMousePosition(e);
 
@@ -146,6 +166,7 @@ const VerletSimulation: React.FC = () => {
                                 activePointIndex === linesRef.current[activeLineIndex].particles.length - 1
                             ) {
                                 const pointUnderMouse = isMouseOverGridPoint(mouseX, mouseY);
+                                console.log(pointUnderMouse);
                                 if (pointUnderMouse) {
                                     setHoveredPoint(pointUnderMouse);
                                 } else {
@@ -159,10 +180,35 @@ const VerletSimulation: React.FC = () => {
                 }
             };
 
-            const handleMouseUp = () => {
-                setActivePointIndex(null);
-                activePointIndexRef.current = null;
-                activeLineIndexRef.current = null;
+            const handleMouseUp = (e: MouseEvent) => {
+                const activePointIndex = activePointIndexRef.current;
+                const activeLineIndex = activeLineIndexRef.current;
+
+                if (activePointIndex !== null && activeLineIndex !== null) {
+                    const line = linesRef.current[activeLineIndex];
+                    if (line) {
+                        const activePoint = line.particles[activePointIndex];
+                        if (activePoint) {
+                            const { x: mouseX, y: mouseY } = getMousePosition(e);
+
+                            const pointUnderMouse = isMouseOverGridPoint(mouseX, mouseY);
+                            if (pointUnderMouse) {
+                                const { x: gridX, y: gridY } = getGridPointCenter(pointUnderMouse);
+
+                                activePoint.pos.x = gridX;
+                                activePoint.pos.y = gridY;
+
+                                updateLine(activeLineIndex);
+
+                                setHoveredPoint(pointUnderMouse);
+                            }
+                        }
+                    }
+
+                    setActivePointIndex(null);
+                    activePointIndexRef.current = null;
+                    activeLineIndexRef.current = null;
+                }
             };
 
             const findClosestParticle = (mouseX: number, mouseY: number): Particle | null => {
@@ -214,14 +260,17 @@ const VerletSimulation: React.FC = () => {
                     context.strokeStyle = "red";
                     context.lineWidth = 30;
                     context.beginPath();
-                    const linePoints = line.particles;
-                    linePoints.forEach((point, index) => {
+
+                    const linePoints: Particle[] = line.segment.particles;
+
+                    linePoints.forEach((point: Particle, index: number) => {
                         if (index === 0) {
                             context.moveTo(point.pos.x, point.pos.y);
                         } else {
                             context.lineTo(point.pos.x, point.pos.y);
                         }
                     });
+
                     context.stroke();
                 });
 
