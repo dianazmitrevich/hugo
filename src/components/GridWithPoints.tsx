@@ -4,11 +4,11 @@ import "./GridWithPoints.css";
 const GRID_COLS = 4;
 const GRID_ROWS = 3;
 const GRID_GAP = 10;
-var POINT_RADIUS = 1;
 
 export type GridPoint = {
     x: number;
     y: number;
+    size: number;
     isHighlighted?: boolean;
 };
 
@@ -19,18 +19,27 @@ const GridWithPoints: React.FC<{ onPointsReady?: (points: GridPoint[]) => void }
         const updateGridPoints = () => {
             const canvasWidth = window.innerWidth;
             const canvasHeight = window.innerHeight;
-            POINT_RADIUS = (canvasWidth - (GRID_COLS - 1) * GRID_GAP) / GRID_COLS / 2;
+
+            const totalWidth = canvasWidth - (GRID_COLS - 1) * GRID_GAP;
+            const totalHeight = canvasHeight - (GRID_ROWS - 1) * GRID_GAP;
+            const pointWidth = totalWidth / GRID_COLS;
+            const pointHeight = totalHeight / GRID_ROWS;
+
+            const pointSize = Math.min(pointWidth, pointHeight);
 
             const points: GridPoint[] = [];
+
             for (let i = 0; i < GRID_COLS; i++) {
                 for (let j = 0; j < GRID_ROWS; j++) {
                     points.push({
-                        x: ((i + 0.5) * canvasWidth) / GRID_COLS,
-                        y: ((j + 0.5) * canvasHeight) / GRID_COLS,
+                        x: i * (pointWidth + GRID_GAP) + pointSize / 2,
+                        y: j * (pointHeight + GRID_GAP) + pointSize / 2,
+                        size: pointSize,
                         isHighlighted: false,
                     });
                 }
             }
+
             setGridPoints(points);
             if (onPointsReady) {
                 onPointsReady(points);
@@ -51,12 +60,12 @@ const GridWithPoints: React.FC<{ onPointsReady?: (points: GridPoint[]) => void }
                 <div
                     key={index}
                     style={{
-                        position: "absolute",
-                        left: point.x - POINT_RADIUS,
-                        top: point.y - POINT_RADIUS + GRID_GAP * (index % GRID_ROWS),
-                        width: POINT_RADIUS * 2,
-                        height: POINT_RADIUS * 2,
                         backgroundColor: point.isHighlighted ? "green" : "blue",
+                        width: point.size,
+                        height: point.size,
+                        position: "absolute",
+                        left: point.x - point.size / 2,
+                        top: point.y - point.size / 2,
                     }}
                     className="dot"
                 />

@@ -11,8 +11,8 @@ type Particle = {
     lastPos: Vec2;
 };
 
-const SNAP_RADIUS = 20;
 const POINT_RADIUS = 10;
+const SNAP_RADIUS = 10;
 
 const VerletSimulation: React.FC = () => {
     const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -105,24 +105,16 @@ const VerletSimulation: React.FC = () => {
                 });
             };
 
-            const findClosestPoint = (mouseX: number, mouseY: number): Particle | null => {
-                let closestPoint: Particle | null = null;
-                let minDistance = SNAP_RADIUS;
-
-                linesRef.current.forEach((line) => {
-                    line.particles.forEach((point) => {
-                        const dx = mouseX - point.pos.x;
-                        const dy = mouseY - point.pos.y;
-                        const distance = Math.sqrt(dx * dx + dy * dy);
-
-                        if (distance < minDistance) {
-                            minDistance = distance;
-                            closestPoint = point;
-                        }
-                    });
+            const isMouseOverGridPoint = (mouseX: number, mouseY: number): boolean => {
+                return gridPoints.some((point) => {
+                    const { x, y, size } = point;
+                    return (
+                        mouseX >= x - size / 2 &&
+                        mouseX <= x + size / 2 &&
+                        mouseY >= y - size / 2 &&
+                        mouseY <= y + size / 2
+                    );
                 });
-
-                return closestPoint;
             };
 
             const getMousePosition = (e: MouseEvent): { x: number; y: number } => {
@@ -146,15 +138,9 @@ const VerletSimulation: React.FC = () => {
                             activePoint.pos.x = mouseX;
                             activePoint.pos.y = mouseY;
 
-                            gridPoints.forEach((point) => {
-                                const dx = mouseX - point.x;
-                                const dy = mouseY - point.y;
-                                const distance = Math.sqrt(dx * dx + dy * dy);
-
-                                if (distance < POINT_RADIUS) {
-                                    console.log("End of line is over a grid point!");
-                                }
-                            });
+                            if (isMouseOverGridPoint(mouseX, mouseY)) {
+                                console.log("End of line is over a grid point!");
+                            }
                         }
                     }
                 }
@@ -164,15 +150,35 @@ const VerletSimulation: React.FC = () => {
                 setActivePointIndex(null);
             };
 
+            const findClosestParticle = (mouseX: number, mouseY: number): Particle | null => {
+                let closestParticle: Particle | null = null;
+                let minDistance = SNAP_RADIUS;
+
+                linesRef.current.forEach((line) => {
+                    line.particles.forEach((particle) => {
+                        const dx = mouseX - particle.pos.x;
+                        const dy = mouseY - particle.pos.y;
+                        const distance = Math.sqrt(dx * dx + dy * dy);
+
+                        if (distance < minDistance) {
+                            minDistance = distance;
+                            closestParticle = particle;
+                        }
+                    });
+                });
+
+                return closestParticle;
+            };
+
             const handleMouseDown = (e: MouseEvent) => {
                 const { x: mouseX, y: mouseY } = getMousePosition(e);
 
-                const closestPoint = findClosestPoint(mouseX, mouseY);
+                const closestParticle = findClosestParticle(mouseX, mouseY);
 
-                if (closestPoint) {
-                    const lineIndex = linesRef.current.findIndex((line) => line.particles.includes(closestPoint));
+                if (closestParticle) {
+                    const lineIndex = linesRef.current.findIndex((line) => line.particles.includes(closestParticle));
                     if (lineIndex !== -1) {
-                        const index = linesRef.current[lineIndex].particles.indexOf(closestPoint);
+                        const index = linesRef.current[lineIndex].particles.indexOf(closestParticle);
                         if (index === 0 || index === linesRef.current[lineIndex].particles.length - 1) {
                             setActivePointIndex(index);
                             activePointIndexRef.current = index;
