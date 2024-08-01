@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from "react";
 import "./GridWithPoints.css";
 
-const GRID_COLS = parseInt("4", 10);
-const GRID_ROWS = parseInt("3", 10);
-const GRID_GAP = parseInt("10", 10);
+const GRID_COLS = 4;
+const GRID_ROWS = 3;
+const GRID_GAP = 10;
 
 export type GridPoint = {
     x: number;
@@ -18,7 +18,8 @@ export type GridPoint = {
 const GridWithPoints: React.FC<{
     onPointsReady?: (points: GridPoint[]) => void;
     hoveredPoint?: GridPoint | null;
-}> = ({ onPointsReady, hoveredPoint }) => {
+    lineColors: string[];
+}> = ({ onPointsReady, hoveredPoint, lineColors }) => {
     const [gridPoints, setGridPoints] = useState<GridPoint[]>([]);
 
     useEffect(() => {
@@ -35,14 +36,11 @@ const GridWithPoints: React.FC<{
 
             const points: GridPoint[] = [];
 
-            const startX = 0;
-            const startY = 0;
-
             for (let i = 0; i < GRID_COLS; i++) {
                 for (let j = 0; j < GRID_ROWS; j++) {
                     points.push({
-                        x: startX + i * (sizeX + GRID_GAP) + sizeX / 2,
-                        y: startY + j * (sizeY + GRID_GAP) + sizeY / 2,
+                        x: i * (sizeX + GRID_GAP) + sizeX / 2,
+                        y: j * (sizeY + GRID_GAP) + sizeY / 2,
                         size: pointSize,
                         sizeX: sizeX,
                         sizeY: sizeY,
@@ -64,7 +62,7 @@ const GridWithPoints: React.FC<{
         return () => {
             window.removeEventListener("resize", updateGridPoints);
         };
-    }, [onPointsReady]);
+    }, [onPointsReady, lineColors]);
 
     const updatedPoints = gridPoints.map((point) => ({
         ...point,

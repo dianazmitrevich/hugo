@@ -25,10 +25,16 @@ const VerletSimulation: React.FC = () => {
     const [hoveredPoint, setHoveredPoint] = useState<GridPoint | null>(null);
     const availablePointsRef = useRef<GridPoint[]>([]);
     const previousPointRef = useRef<Vec2 | null>(null);
+    const [lineColors, setLineColors] = useState<string[]>([]);
 
     useEffect(() => {
         activePointIndexRef.current = activePointIndex;
     }, [activePointIndex]);
+
+    useEffect(() => {
+        const shuffledColors = [...LINE_COLORS].sort(() => 0.5 - Math.random()).slice(0, 3);
+        setLineColors(shuffledColors);
+    }, []);
 
     useEffect(() => {
         const handleResize = () => {
@@ -117,25 +123,21 @@ const VerletSimulation: React.FC = () => {
                 return array;
             };
 
-            const shuffledColors = shuffleArray([...LINE_COLORS]);
-
-            const uniqueColors = shuffledColors.slice(0, 3);
-
             linesRef.current = [
                 {
                     segment: createRandomLine(),
                     particles: [],
-                    color: uniqueColors[0],
+                    color: lineColors[0],
                 },
                 {
                     segment: createRandomLine(),
                     particles: [],
-                    color: uniqueColors[1],
+                    color: lineColors[1],
                 },
                 {
                     segment: createRandomLine(),
                     particles: [],
-                    color: uniqueColors[2],
+                    color: lineColors[2],
                 },
             ].filter((line) => line.segment !== null);
 
@@ -362,7 +364,7 @@ const VerletSimulation: React.FC = () => {
 
     return (
         <div>
-            <GridWithPoints onPointsReady={setGridPoints} hoveredPoint={hoveredPoint} />
+            <GridWithPoints lineColors={lineColors} onPointsReady={setGridPoints} hoveredPoint={hoveredPoint} />
             <canvas ref={canvasRef} style={{ width: "100%", height: "100vh" }} />
         </div>
     );
