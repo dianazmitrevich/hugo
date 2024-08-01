@@ -1,14 +1,16 @@
 import React, { useEffect, useState } from "react";
 import "./GridWithPoints.css";
 
-const GRID_COLS = 4;
-const GRID_ROWS = 3;
-const GRID_GAP = 10;
+const GRID_COLS = parseInt("4", 10);
+const GRID_ROWS = parseInt("3", 10);
+const GRID_GAP = parseInt("10", 10);
 
 export type GridPoint = {
     x: number;
     y: number;
     size: number;
+    sizeX: number;
+    sizeY: number;
     isHighlighted?: boolean;
     isHovered?: boolean;
 };
@@ -26,19 +28,24 @@ const GridWithPoints: React.FC<{
 
             const totalWidth = canvasWidth - (GRID_COLS - 1) * GRID_GAP;
             const totalHeight = canvasHeight - (GRID_ROWS - 1) * GRID_GAP;
-            const pointWidth = totalWidth / GRID_COLS;
-            const pointHeight = totalHeight / GRID_ROWS;
 
-            const pointSize = Math.min(pointWidth, pointHeight);
+            const pointSize = Math.min(totalWidth / GRID_COLS, totalHeight / GRID_ROWS);
+            const sizeX = (window.innerWidth - (GRID_COLS - 1) * GRID_GAP) / GRID_COLS;
+            const sizeY = (window.innerHeight - (GRID_ROWS - 1) * GRID_GAP) / GRID_ROWS;
 
             const points: GridPoint[] = [];
+
+            const startX = 0;
+            const startY = 0;
 
             for (let i = 0; i < GRID_COLS; i++) {
                 for (let j = 0; j < GRID_ROWS; j++) {
                     points.push({
-                        x: i * (pointWidth + GRID_GAP) + pointSize / 2,
-                        y: j * (pointHeight + GRID_GAP) + pointSize / 2,
+                        x: startX + i * (sizeX + GRID_GAP) + sizeX / 2,
+                        y: startY + j * (sizeY + GRID_GAP) + sizeY / 2,
                         size: pointSize,
+                        sizeX: sizeX,
+                        sizeY: sizeY,
                         isHighlighted: false,
                         isHovered: false,
                     });
@@ -71,11 +78,13 @@ const GridWithPoints: React.FC<{
                     key={index}
                     style={{
                         backgroundColor: point.isHovered ? "green" : point.isHighlighted ? "blue" : "grey",
-                        width: point.size,
-                        height: point.size,
+                        minWidth: point.sizeX,
+                        maxWidth: point.sizeX,
+                        minHeight: point.sizeY,
+                        maxHeight: point.sizeY,
                         position: "absolute",
-                        left: point.x - point.size / 2,
-                        top: point.y - point.size / 2,
+                        left: point.x - point.sizeX / 2,
+                        top: point.y - point.sizeY / 2,
                     }}
                     className="dot"
                 />

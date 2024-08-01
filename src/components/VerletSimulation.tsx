@@ -126,12 +126,12 @@ const VerletSimulation: React.FC = () => {
             const isMouseOverGridPoint = (mouseX: number, mouseY: number): GridPoint | null => {
                 return (
                     gridPoints.find((point) => {
-                        const { x, y, size } = point;
+                        const { x, y, sizeX, sizeY } = point;
                         return (
-                            mouseX >= x - size / 2 &&
-                            mouseX <= x + size / 2 &&
-                            mouseY >= y - size / 2 &&
-                            mouseY <= y + size / 2
+                            mouseX >= x - sizeX / 2 &&
+                            mouseX <= x + sizeX / 2 &&
+                            mouseY >= y - sizeY / 2 &&
+                            mouseY <= y + sizeY / 2
                         );
                     }) || null
                 );
@@ -210,6 +210,8 @@ const VerletSimulation: React.FC = () => {
                                             x: previousPoint.x,
                                             y: previousPoint.y,
                                             size: POINT_RADIUS,
+                                            sizeX: POINT_RADIUS,
+                                            sizeY: POINT_RADIUS,
                                         });
 
                                         availablePointsRef.current = availablePointsRef.current.filter(
