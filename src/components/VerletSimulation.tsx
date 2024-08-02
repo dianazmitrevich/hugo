@@ -55,7 +55,7 @@ const VerletSimulation: React.FC = () => {
 
             const sim = new VerletJS(width, height, canvas);
             sim.gravity = new Vec2(0, 1);
-            sim.friction = 0.95;
+            sim.friction = 0.99;
 
             const createRandomLine = () => {
                 if (availablePointsRef.current.length < 2) {
@@ -90,7 +90,7 @@ const VerletSimulation: React.FC = () => {
                     points.push(new Vec2(x, y));
                 }
 
-                const segment = sim.lineSegments(points, 0.65);
+                const segment = sim.lineSegments(points, 0.96);
                 segment.pin(0);
                 segment.pin(points.length - 1);
 
@@ -206,6 +206,30 @@ const VerletSimulation: React.FC = () => {
                 }
             };
 
+            const checkLineConnection = (line: any) => {
+                const start = line.particles[0];
+                const end = line.particles[line.particles.length - 1];
+
+                const startPointElement = document.querySelector(`[data-x="${start.pos.x}"][data-y="${start.pos.y}"]`);
+                const endPointElement = document.querySelector(`[data-x="${end.pos.x}"][data-y="${end.pos.y}"]`);
+
+                const startPointColor = startPointElement ? startPointElement.getAttribute("data-color") : null;
+                const endPointColor = endPointElement ? endPointElement.getAttribute("data-color") : null;
+
+                const lineColor = line.color;
+
+                if (
+                    startPointColor &&
+                    endPointColor &&
+                    startPointColor === endPointColor &&
+                    startPointColor === lineColor
+                ) {
+                    console.log(
+                        `Connected ${lineColor} points: ${start.pos.x},${start.pos.y} to ${end.pos.x},${end.pos.y}`
+                    );
+                }
+            };
+
             const handleMouseUp = (e: MouseEvent) => {
                 const activePointIndex = activePointIndexRef.current;
                 const activeLineIndex = activeLineIndexRef.current;
@@ -263,6 +287,8 @@ const VerletSimulation: React.FC = () => {
 
                             setActivePointIndex(null);
                             activePointIndexRef.current = null;
+                            const currentLine = linesRef.current[activeLineIndex];
+                            checkLineConnection(currentLine);
                             activeLineIndexRef.current = null;
                         }
                     }

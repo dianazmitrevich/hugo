@@ -32,7 +32,6 @@ const GridWithPoints: React.FC<{
             const canvasHeight = window.innerHeight;
 
             const totalHeight = canvasHeight - SPACE_BELOW - (GRID_ROWS - 1) * GRID_GAP;
-
             const totalWidth = canvasWidth - (GRID_COLS - 1) * GRID_GAP;
             const pointSize = Math.min(totalWidth / GRID_COLS, totalHeight / GRID_ROWS);
             const sizeX = totalWidth / GRID_COLS;
@@ -69,10 +68,13 @@ const GridWithPoints: React.FC<{
 
             lineColors.forEach((color) => {
                 for (let i = 0; i < 2; i++) {
-                    colorAssignments.push({
-                        ...shuffledPoints.pop()!,
-                        color,
-                    });
+                    const point = shuffledPoints.pop();
+                    if (point) {
+                        colorAssignments.push({
+                            ...point,
+                            color,
+                        });
+                    }
                 }
             });
 
@@ -110,17 +112,18 @@ const GridWithPoints: React.FC<{
                         backgroundColor: "transparent",
                         border: "10px solid #fff",
                         borderRadius: "5px",
-                        borderColor: point.color ? point.color : "grey",
-                        minWidth: point.sizeX,
-                        maxWidth: point.sizeX,
-                        minHeight: point.sizeY,
-                        maxHeight: point.sizeY,
+                        borderColor: point.color || "grey",
+                        width: point.sizeX,
+                        height: point.sizeY,
                         position: "absolute",
                         left: point.x - point.sizeX / 2,
                         top: point.y - point.sizeY / 2,
                         opacity: 0.5,
                     }}
                     className="dot"
+                    data-color={point.color}
+                    data-x={point.x}
+                    data-y={point.y}
                 />
             ))}
         </div>
