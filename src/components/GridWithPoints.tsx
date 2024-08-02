@@ -1,9 +1,12 @@
 import React, { useEffect, useState } from "react";
 import "./GridWithPoints.css";
 
-const GRID_COLS = 4;
-const GRID_ROWS = 3;
-const GRID_GAP = 10;
+const GRID_COLS = 5;
+const GRID_ROWS = 4;
+const GRID_GAP = 3;
+const SPACE_BELOW = 100;
+const SKIP_COLS = 2;
+const SKIP_ROWS = 2;
 
 export type GridPoint = {
     x: number;
@@ -28,17 +31,21 @@ const GridWithPoints: React.FC<{
             const canvasWidth = window.innerWidth;
             const canvasHeight = window.innerHeight;
 
-            const totalWidth = canvasWidth - (GRID_COLS - 1) * GRID_GAP;
-            const totalHeight = canvasHeight - (GRID_ROWS - 1) * GRID_GAP;
+            const totalHeight = canvasHeight - SPACE_BELOW - (GRID_ROWS - 1) * GRID_GAP;
 
+            const totalWidth = canvasWidth - (GRID_COLS - 1) * GRID_GAP;
             const pointSize = Math.min(totalWidth / GRID_COLS, totalHeight / GRID_ROWS);
-            const sizeX = (window.innerWidth - (GRID_COLS - 1) * GRID_GAP) / GRID_COLS;
-            const sizeY = (window.innerHeight - (GRID_ROWS - 1) * GRID_GAP) / GRID_ROWS;
+            const sizeX = totalWidth / GRID_COLS;
+            const sizeY = totalHeight / GRID_ROWS;
 
             const points: GridPoint[] = [];
 
             for (let i = 0; i < GRID_COLS; i++) {
                 for (let j = 0; j < GRID_ROWS; j++) {
+                    if (i < SKIP_COLS && j < SKIP_ROWS) {
+                        continue;
+                    }
+
                     points.push({
                         x: i * (sizeX + GRID_GAP) + sizeX / 2,
                         y: j * (sizeY + GRID_GAP) + sizeY / 2,
@@ -100,13 +107,10 @@ const GridWithPoints: React.FC<{
                 <div
                     key={index}
                     style={{
-                        backgroundColor: point.color
-                            ? point.color
-                            : point.isHovered
-                            ? "green"
-                            : point.isHighlighted
-                            ? "blue"
-                            : "grey",
+                        backgroundColor: "transparent",
+                        border: "10px solid #fff",
+                        borderRadius: "5px",
+                        borderColor: point.color ? point.color : "grey",
                         minWidth: point.sizeX,
                         maxWidth: point.sizeX,
                         minHeight: point.sizeY,
