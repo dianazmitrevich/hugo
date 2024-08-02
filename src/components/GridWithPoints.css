@@ -58,3 +58,7 @@ canvas {
 .color-screen.active {
     height: 80vh;
 }
+
+.color-screen.can-toggle {
+    margin-top: -40px;
+}

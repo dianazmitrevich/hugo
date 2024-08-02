@@ -5,21 +5,19 @@ interface ColorScreensProps {
 }
 
 const ColorScreens: React.FC<ColorScreensProps> = ({ lineColors }) => {
-    const [activeIndex, setActiveIndex] = useState<number | null>(null);
-
     const handleGlobalClick = (event: MouseEvent) => {
         const target = event.target as HTMLElement;
 
         const colorScreen = target.closest(".color-screen");
 
         if (colorScreen) {
-            const index = parseInt(colorScreen.getAttribute("data-index") || "-1", 10);
-            if (index >= 0) {
-                console.log(`Clicked on color-screen with index: ${index}`);
-                setActiveIndex(index);
+            if (colorScreen.classList.contains("can-toggle")) {
+                colorScreen.classList.add("active");
             }
         } else {
-            setActiveIndex(null);
+            document.querySelectorAll(".color-screen").forEach((element) => {
+                element.classList.remove("active");
+            });
         }
     };
 
@@ -31,17 +29,12 @@ const ColorScreens: React.FC<ColorScreensProps> = ({ lineColors }) => {
         };
     }, []);
 
-    const handleClick = (index: number) => {
-        console.log(`Clicked index: ${index}`);
-        setActiveIndex(index);
-    };
-
     return (
         <div className="color-screens">
             {lineColors.map((color, index) => (
                 <div
                     key={index}
-                    className={`color-screen ${activeIndex === index ? "active" : ""}`}
+                    className={`color-screen`}
                     style={{ backgroundColor: color }}
                     data-index={index}
                     data-color={color}></div>
