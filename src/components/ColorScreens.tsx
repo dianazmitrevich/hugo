@@ -43,7 +43,8 @@ const ColorScreens: React.FC<ColorScreensProps> = ({ lineColors }) => {
                     key={index}
                     className={`color-screen ${activeIndex === index ? "active" : ""}`}
                     style={{ backgroundColor: color }}
-                    data-index={index}></div>
+                    data-index={index}
+                    data-color={color}></div>
             ))}
         </div>
     );

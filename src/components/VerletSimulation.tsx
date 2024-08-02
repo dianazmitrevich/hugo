@@ -219,15 +219,20 @@ const VerletSimulation: React.FC = () => {
 
                 const lineColor = line.color;
 
+                let screen = document.querySelector(`.color-screen[data-color="${line.color}"]`);
+
                 if (
                     startPointColor &&
                     endPointColor &&
                     startPointColor === endPointColor &&
                     startPointColor === lineColor
                 ) {
+                    screen?.classList.add("can-toggle");
                     console.log(
                         `Connected ${lineColor} points: ${start.pos.x},${start.pos.y} to ${end.pos.x},${end.pos.y}`
                     );
+                } else {
+                    screen?.classList.remove("can-toggle");
                 }
             };
 
