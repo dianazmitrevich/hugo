@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import GridWithPoints, { GridPoint } from "./GridWithPoints";
+import ColorScreens from "./ColorScreens";
 
 type Vec2 = {
     x: number;
@@ -386,10 +387,11 @@ const VerletSimulation: React.FC = () => {
     }, [gridPoints]);
 
     return (
-        <div>
+        <>
             <GridWithPoints lineColors={lineColors} onPointsReady={setGridPoints} hoveredPoint={hoveredPoint} />
             <canvas ref={canvasRef} style={{ width: "100%", height: "100vh" }} />
-        </div>
+            <ColorScreens lineColors={lineColors} />
+        </>
     );
 };
 

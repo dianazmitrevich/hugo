@@ -9,10 +9,10 @@ body {
 }
 
 canvas {
-    position: absolute;
+    position: relative;
     top: 0;
     left: 0;
-    z-index: 99999;
+    z-index: 1;
 }
 
 .dots__container {
@@ -32,4 +32,29 @@ canvas {
     height: calc((100% - 10px * 2) / 3);
     position: relative;
     background: blue;
+}
+
+.color-screens {
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+    display: flex;
+    transition: transform 0.3s ease-in-out;
+    z-index: 999999999;
+}
+
+.color-screen {
+    border-radius: 8px;
+    cursor: pointer;
+    transform: translateY(0);
+    position: relative;
+    z-index: 9999999999;
+    flex: 1;
+    height: 100px;
+    margin-bottom: -50px;
+    transition: all 0.24s ease-in-out;
+}
+
+.color-screen.active {
+    height: 80vh;
 }
