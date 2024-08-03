@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import GridWithPoints, { GridPoint } from "./GridWithPoints";
 import ColorScreens from "./ColorScreens";
+import InfoBlock from "./InfoBlock";
 
 type Vec2 = {
     x: number;
@@ -14,7 +15,13 @@ type Particle = {
 
 const POINT_RADIUS = 10;
 const SNAP_RADIUS = 40;
-const LINE_COLORS = ["#FF5733", "#33FF57", "#3357FF", "#F333FF", "#FF33A1"];
+const LINE_COLORS = ["#FF5733", "#33FF57", "#F333FF", "#FF33A1"];
+const SECTIONS = [
+    { color: "", section: "about", title: "Обо мне" },
+    { color: "", section: "text1", title: "text12" },
+    { color: "", section: "text2", title: "text13" },
+    { color: "", section: "text3", title: "text14" },
+];
 
 const VerletSimulation: React.FC = () => {
     const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -33,7 +40,11 @@ const VerletSimulation: React.FC = () => {
     }, [activePointIndex]);
 
     useEffect(() => {
-        const shuffledColors = [...LINE_COLORS].sort(() => 0.5 - Math.random()).slice(0, 3);
+        const shuffledColors = [...LINE_COLORS].sort(() => 0.5 - Math.random()).slice(0, SECTIONS.length);
+        SECTIONS.forEach((element, index) => {
+            element.color = shuffledColors[index];
+        });
+
         setLineColors(shuffledColors);
     }, []);
 
@@ -124,23 +135,15 @@ const VerletSimulation: React.FC = () => {
                 return array;
             };
 
-            linesRef.current = [
-                {
+            linesRef.current = [];
+            SECTIONS.forEach((element, index) => {
+                linesRef.current.push({
                     segment: createRandomLine(),
                     particles: [],
-                    color: lineColors[0],
-                },
-                {
-                    segment: createRandomLine(),
-                    particles: [],
-                    color: lineColors[1],
-                },
-                {
-                    segment: createRandomLine(),
-                    particles: [],
-                    color: lineColors[2],
-                },
-            ].filter((line) => line.segment !== null);
+                    color: element.color,
+                });
+            });
+            linesRef.current.filter((line) => line.segment !== null);
 
             const updateParticles = () => {
                 linesRef.current.forEach((line) => {
@@ -355,7 +358,7 @@ const VerletSimulation: React.FC = () => {
                     context.strokeStyle = line.color;
                     context.lineJoin = "round";
                     context.lineCap = "round";
-                    context.lineWidth = 60;
+                    context.lineWidth = 40;
                     context.beginPath();
 
                     const linePoints: Particle[] = line.segment.particles;
@@ -395,7 +398,8 @@ const VerletSimulation: React.FC = () => {
         <>
             <GridWithPoints lineColors={lineColors} onPointsReady={setGridPoints} hoveredPoint={hoveredPoint} />
             <canvas ref={canvasRef} style={{ width: "100%", height: "100vh" }} />
-            <ColorScreens lineColors={lineColors} />
+            <ColorScreens lineColors={SECTIONS} />
+            <InfoBlock lineColors={lineColors} />
         </>
     );
 };

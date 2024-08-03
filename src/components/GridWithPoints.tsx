@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from "react";
 import "./GridWithPoints.css";
 
-const GRID_COLS = 5;
-const GRID_ROWS = 4;
-const GRID_GAP = 3;
-const SPACE_BELOW = 100;
-const SKIP_COLS = 2;
-const SKIP_ROWS = 2;
+const GRID_COLS = 8;
+const GRID_ROWS = 5;
+const GRID_GAP = 10;
+const SPACE_BELOW = 50;
+const SKIP_COLS = 3;
+const SKIP_ROWS = 3;
 
 export type GridPoint = {
     x: number;
@@ -109,16 +109,11 @@ const GridWithPoints: React.FC<{
                 <div
                     key={index}
                     style={{
-                        backgroundColor: "transparent",
-                        border: "10px solid #fff",
-                        borderRadius: "5px",
                         borderColor: point.color || "grey",
                         width: point.sizeX,
                         height: point.sizeY,
-                        position: "absolute",
                         left: point.x - point.sizeX / 2,
                         top: point.y - point.sizeY / 2,
-                        opacity: 0.5,
                     }}
                     className="dot"
                     data-color={point.color}
