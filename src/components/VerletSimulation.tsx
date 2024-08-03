@@ -15,12 +15,13 @@ type Particle = {
 
 const POINT_RADIUS = 10;
 const SNAP_RADIUS = 40;
-const LINE_COLORS = ["#FF5733", "#33FF57", "#F333FF", "#FF33A1"];
+const LINE_COLORS = ["#FF5733", "#28C443", "#F333FF", "#FF33A1", "#34B1E8", "#733CCD"];
 const SECTIONS = [
     { color: "", section: "about", title: "Обо мне" },
-    { color: "", section: "text1", title: "text12" },
-    { color: "", section: "text2", title: "text13" },
-    { color: "", section: "text3", title: "text14" },
+    { color: "", section: "text1", title: "Ссылки" },
+    { color: "", section: "text2", title: "Проекты" },
+    { color: "", section: "text3", title: "Опыт" },
+    { color: "", section: "text3", title: "Об этом проекте" },
 ];
 
 const VerletSimulation: React.FC = () => {
@@ -34,6 +35,7 @@ const VerletSimulation: React.FC = () => {
     const availablePointsRef = useRef<GridPoint[]>([]);
     const previousPointRef = useRef<Vec2 | null>(null);
     const [lineColors, setLineColors] = useState<string[]>([]);
+    const [highlightedPointsByColor, setHighlightedPointsByColor] = useState<{ [color: string]: GridPoint[] }>({});
 
     useEffect(() => {
         activePointIndexRef.current = activePointIndex;
@@ -224,12 +226,54 @@ const VerletSimulation: React.FC = () => {
 
                 let screen = document.querySelector(`.color-screen[data-color="${line.color}"]`);
 
-                if (
-                    startPointColor &&
-                    endPointColor &&
-                    startPointColor === endPointColor &&
-                    startPointColor === lineColor
-                ) {
+                const updateHighlightedPoints = (color: string, point: Vec2) => {
+                    setHighlightedPointsByColor((prev) => {
+                        const updated = { ...prev };
+                        if (!updated[color]) {
+                            updated[color] = [];
+                        }
+                        const newPoint: GridPoint = {
+                            x: point.x,
+                            y: point.y,
+                            size: POINT_RADIUS,
+                            sizeX: POINT_RADIUS,
+                            sizeY: POINT_RADIUS,
+                            color: color,
+                        };
+                        if (!updated[color].some((p) => p.x === newPoint.x && p.y === newPoint.y)) {
+                            updated[color].push(newPoint);
+                        }
+                        return updated;
+                    });
+                };
+
+                const removeHighlightedPoint = (point: any) => {
+                    setHighlightedPointsByColor((prev) => {
+                        const updated = { ...prev };
+
+                        for (const color in updated) {
+                            if (updated[color]) {
+                                updated[color] = updated[color].filter((p) => !(p.x === point.x && p.y === point.y));
+                            }
+                        }
+
+                        return updated;
+                    });
+                };
+
+                if (startPointColor === lineColor) {
+                    updateHighlightedPoints(lineColor, start.pos);
+                } else {
+                    removeHighlightedPoint(previousPointRef.current);
+                }
+
+                if (endPointColor === lineColor) {
+                    updateHighlightedPoints(lineColor, end.pos);
+                } else {
+                    removeHighlightedPoint(previousPointRef.current);
+                }
+
+                if (startPointColor === endPointColor && startPointColor === lineColor) {
                     screen?.classList.add("can-toggle");
                     console.log(
                         `Connected ${lineColor} points: ${start.pos.x},${start.pos.y} to ${end.pos.x},${end.pos.y}`
@@ -396,10 +440,16 @@ const VerletSimulation: React.FC = () => {
 
     return (
         <>
-            <GridWithPoints lineColors={lineColors} onPointsReady={setGridPoints} hoveredPoint={hoveredPoint} />
+            <GridWithPoints
+                lineColors={lineColors}
+                onPointsReady={setGridPoints}
+                hoveredPoint={hoveredPoint}
+                highlightedPointsByColor={highlightedPointsByColor}
+            />
+
             <canvas ref={canvasRef} style={{ width: "100%", height: "100vh" }} />
             <ColorScreens lineColors={SECTIONS} />
-            <InfoBlock lineColors={lineColors} />
+            <InfoBlock lineColors={SECTIONS} />
         </>
     );
 };

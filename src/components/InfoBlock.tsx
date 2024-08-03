@@ -1,8 +1,12 @@
 import React, { useState, useEffect } from "react";
 
-interface InfoBlockProps {
-    lineColors: string[];
-}
+type InfoBlockProps = {
+    lineColors: {
+        color: string;
+        section: string;
+        title: string;
+    }[];
+};
 
 const InfoBlock: React.FC<InfoBlockProps> = ({ lineColors }) => {
     return (
@@ -19,11 +23,11 @@ const InfoBlock: React.FC<InfoBlockProps> = ({ lineColors }) => {
                     нужной линией
                 </div>
                 <div className="info__tags">
-                    <div className="tag">Я тут был 👍</div>
-                    <div className="tag">Обо мне</div>
-                    <div className="tag">Ссылки</div>
-                    <div className="tag">Проекты</div>
-                    <div className="tag">Опыт</div>
+                    {lineColors.map((color, index) => (
+                        <div key={index} className="tag" style={{ backgroundColor: color.color }}>
+                            {color.title}
+                        </div>
+                    ))}
                 </div>
             </div>
         </div>

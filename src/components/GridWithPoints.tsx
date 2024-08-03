@@ -23,7 +23,8 @@ const GridWithPoints: React.FC<{
     onPointsReady?: (points: GridPoint[]) => void;
     hoveredPoint?: GridPoint | null;
     lineColors: string[];
-}> = ({ onPointsReady, hoveredPoint, lineColors }) => {
+    highlightedPointsByColor: { [color: string]: GridPoint[] };
+}> = ({ onPointsReady, hoveredPoint, lineColors, highlightedPointsByColor }) => {
     const [gridPoints, setGridPoints] = useState<GridPoint[]>([]);
 
     useEffect(() => {
@@ -63,7 +64,6 @@ const GridWithPoints: React.FC<{
                 [shuffledPoints[i], shuffledPoints[j]] = [shuffledPoints[j], shuffledPoints[i]];
             }
 
-            const totalColors = lineColors.length;
             const colorAssignments: GridPoint[] = [];
 
             lineColors.forEach((color) => {
@@ -98,10 +98,18 @@ const GridWithPoints: React.FC<{
         };
     }, [onPointsReady, lineColors]);
 
-    const updatedPoints = gridPoints.map((point) => ({
-        ...point,
-        isHovered: hoveredPoint ? point === hoveredPoint : false,
-    }));
+    const updatedPoints = gridPoints.map((point) => {
+        const isHighlighted = Object.keys(highlightedPointsByColor).some((color) =>
+            highlightedPointsByColor[color].some(
+                (highlightedPoint) => highlightedPoint.x === point.x && highlightedPoint.y === point.y
+            )
+        );
+
+        return {
+            ...point,
+            isHighlighted: isHighlighted,
+        };
+    });
 
     return (
         <div className="dots__container">
@@ -110,6 +118,7 @@ const GridWithPoints: React.FC<{
                     key={index}
                     style={{
                         borderColor: point.color || "grey",
+                        backgroundColor: point.isHighlighted ? point.color : "transparent",
                         width: point.sizeX,
                         height: point.sizeY,
                         left: point.x - point.sizeX / 2,
