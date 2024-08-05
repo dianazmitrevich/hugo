@@ -8,22 +8,12 @@
     min-height: 100%;
 }
 
-.screen-content.experience .experience__wrapper:before {
-    content: "";
-    position: absolute;
-    top: 0;
-    left: 59px;
-    height: 100%;
-    width: 2px;
-    background: var(--line-color, #fff);
-}
-
 .screen-content.experience .experience__wrapper:after {
     content: "";
     position: absolute;
     top: 0;
     left: 0;
-    height: 116px;
+    height: 106px;
     width: 100%;
     background: #2f2f2f;
 }
@@ -34,6 +24,7 @@
     flex-direction: column;
     gap: 40px;
     width: 100%;
+    border-left: 2px solid var(--line-color, #fff);
 }
 
 .screen-content.experience .experience__items .item {
