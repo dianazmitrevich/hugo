@@ -7,6 +7,12 @@ type TechTagsProps = {
 
 const tagItems = [
     {
+        alias: "php",
+        text: "PHP",
+        color: "#4B8FF5",
+        isDarkerText: false,
+    },
+    {
         alias: "html",
         text: "HTML",
         color: "#E34F26",
