@@ -9,28 +9,28 @@ const linkItems = [
     {
         image: "/assets/img/mail.png",
         text: "zmitrevichdiana@gmail.com",
-        href: "",
+        href: "mailto:zmitrevichdiana@gmail.com",
     },
     {
         image: "/assets/img/github.png",
         text: "dianazmitrevich",
-        href: "",
+        href: "https://github.com/dianazmitrevich",
     },
     {
         image: "/assets/img/linkedin.png",
         text: "dianazmitrevich",
-        href: "",
+        href: "https://www.linkedin.com/in/dianazmitrevich/",
     },
     {
         image: "/assets/img/telegram.png",
         text: "dianazmitrevich",
-        href: "",
+        href: "https://t.me/dianazmitrevich",
     },
-    {
-        image: "/assets/img/whatsapp.png",
-        text: "dianazmitrevich",
-        href: "",
-    },
+    // {
+    //     image: "/assets/img/whatsapp.png",
+    //     text: "dianazmitrevich",
+    //     href: "https://wa.me/",
+    // },
 ];
 
 const LinksScreen: React.FC<LinksScreenProps> = ({ lineColor }) => {
