@@ -1,4 +1,9 @@
 import React, { useState, useEffect } from "react";
+import AboutScreen from "./AboutScreen";
+import LinksScreen from "./LinksScreen";
+import ProjectsScreen from "./ProjectsScreen";
+import ExperienceScreen from "./ExperienceScreen";
+import StackScreen from "./StackScreen";
 
 type ColorScreensProps = {
     lineColors: {
@@ -25,6 +30,23 @@ const ColorScreens: React.FC<ColorScreensProps> = ({ lineColors }) => {
         }
     };
 
+    const renderScreen = (section: string, color: string) => {
+        switch (section) {
+            case "about":
+                return <AboutScreen lineColor={color} />;
+            case "links":
+                return <LinksScreen lineColor={color} />;
+            case "projects":
+                return <ProjectsScreen lineColor={color} />;
+            case "experience":
+                return <ExperienceScreen lineColor={color} />;
+            case "stack":
+                return <StackScreen lineColor={color} />;
+            default:
+                return null;
+        }
+    };
+
     useEffect(() => {
         window.addEventListener("click", handleGlobalClick);
 
@@ -38,9 +60,7 @@ const ColorScreens: React.FC<ColorScreensProps> = ({ lineColors }) => {
             {lineColors.map((color, index) => (
                 <div key={index} className={`color-screen`} data-index={index} data-color={color.color}>
                     <div className="screen-btn" style={{ backgroundColor: color.color }}></div>
-                    <div className="screen-content">
-                        <p>20 pixels</p>
-                    </div>
+                    {renderScreen(color.section, color.color)}
                 </div>
             ))}
         </div>

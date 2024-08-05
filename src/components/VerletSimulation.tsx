@@ -18,10 +18,10 @@ const SNAP_RADIUS = 40;
 const LINE_COLORS = ["#FF5733", "#28C443", "#F333FF", "#FF33A1", "#34B1E8", "#733CCD"];
 const SECTIONS = [
     { color: "", section: "about", title: "Обо мне" },
-    { color: "", section: "text1", title: "Ссылки" },
-    { color: "", section: "text2", title: "Проекты" },
-    { color: "", section: "text3", title: "Опыт" },
-    { color: "", section: "text3", title: "Об этом проекте" },
+    { color: "", section: "links", title: "Ссылки" },
+    { color: "", section: "projects", title: "Проекты" },
+    { color: "", section: "experience", title: "Опыт" },
+    { color: "", section: "stack", title: "Мой стек" },
 ];
 
 const VerletSimulation: React.FC = () => {

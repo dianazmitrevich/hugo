@@ -177,3 +177,11 @@ canvas {
     padding: 11px 22px;
     font-weight: 700;
 }
+
+a {
+    text-decoration: none;
+}
+
+.d-none {
+    display: none;
+}

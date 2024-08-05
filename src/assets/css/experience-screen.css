@@ -1,0 +1,106 @@
+.screen-content.experience .experience__wrapper {
+    width: 100%;
+    padding: 40px 60px;
+    padding-top: 0;
+    max-height: 100%;
+    overflow: auto;
+    position: relative;
+    min-height: 100%;
+}
+
+.screen-content.experience .experience__wrapper:before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 59px;
+    height: 100%;
+    width: 2px;
+    background: var(--line-color, #fff);
+}
+
+.screen-content.experience .experience__wrapper:after {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 116px;
+    width: 100%;
+    background: #2f2f2f;
+}
+
+.screen-content.experience .experience__items {
+    padding-left: 48px;
+    display: flex;
+    flex-direction: column;
+    gap: 40px;
+    width: 100%;
+}
+
+.screen-content.experience .experience__items .item {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    width: 100%;
+}
+
+.screen-content.experience .experience__items .item__wrap {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    width: 100%;
+}
+
+.screen-content.experience .experience__items .title-wrap {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.screen-content.experience .experience__items .item__title {
+    font-size: 18px;
+    font-weight: 700;
+    color: #fff;
+    position: relative;
+}
+
+.screen-content.experience .experience__items .item__title:before {
+    position: absolute;
+    content: "";
+    width: 16px;
+    height: 16px;
+    background: var(--line-color, #fff);
+    border-radius: 50%;
+    top: 50%;
+    transform: translateY(-50%);
+    left: -56px;
+}
+
+.screen-content.experience .experience__items .item__time {
+    font-size: 14px;
+    color: #6b6b6b;
+    font-weight: 700;
+}
+
+.screen-content.experience .experience__items .item__text {
+    font-size: 14px;
+    color: #fff;
+    max-width: 50%;
+    width: 100%;
+}
+
+.screen-content.experience .experience__items .item__text ul {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    list-style-type: "- ";
+}
+
+.screen-content.experience .experience__items .item__text li {
+    list-style-position: inside;
+}
+
+.screen-content.experience .experience__items .item__tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
