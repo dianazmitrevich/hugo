@@ -192,6 +192,12 @@ const tagItems = [
         color: "#006400",
         isDarkerText: false,
     },
+    {
+        alias: "tailwind",
+        text: "Tailwind",
+        color: "#36B7F0",
+        isDarkerText: false,
+    },
 ];
 
 const TechTags: React.FC<TechTagsProps> = ({ tags }) => {

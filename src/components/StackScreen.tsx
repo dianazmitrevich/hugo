@@ -39,7 +39,7 @@ const projectItems = [
     },
     {
         title: "CSS препроцессоры и фреймворки",
-        tags: ["sass", "less", "bootstrap", "mui"],
+        tags: ["sass", "less", "bootstrap", "mui", "tailwind"],
     },
     {
         title: "SEO",
