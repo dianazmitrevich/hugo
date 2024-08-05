@@ -9,11 +9,45 @@ type StackScreenProps = {
 const projectItems = [
     {
         title: "Frontend",
-        tags: ["php", "js", "slick"],
+        tags: [
+            "html",
+            "css",
+            "js",
+            "pug",
+            "rest",
+            "json",
+            "ajax",
+            "react",
+            "node",
+            "lottie",
+            "next",
+            "react-native",
+            "slick",
+            "jsx",
+            "react-dnd",
+            "google-maps",
+            "redux",
+        ],
     },
     {
-        title: "Backend",
-        tags: ["js"],
+        title: "Инструменты разработчика",
+        tags: ["git", "docker", "firebase", "mongodb"],
+    },
+    {
+        title: "Build tools",
+        tags: ["webpack", "gulp"],
+    },
+    {
+        title: "CSS препроцессоры и фреймворки",
+        tags: ["sass", "less", "bootstrap", "mui"],
+    },
+    {
+        title: "SEO",
+        tags: ["seo"],
+    },
+    {
+        title: "Иностранные языки",
+        tags: ["ru", "en"],
     },
 ];
 
